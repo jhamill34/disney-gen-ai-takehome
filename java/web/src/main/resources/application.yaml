@@ -1,0 +1,14 @@
+langchain4j:
+  rag:
+      retrieval:
+          max-results: 3
+
+  open-ai:
+      chat-model:
+          api-key: ${OPENAI_API_KEY}
+          model-name: "gpt-4o"
+          log-requests: true
+          log-responses: true
+      embedding-model:
+          api-key: ${OPENAI_API_KEY}
+          model-name: "text-embedding-3-small"

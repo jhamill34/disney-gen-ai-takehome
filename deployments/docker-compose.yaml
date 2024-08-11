@@ -1,0 +1,15 @@
+name: disney-th-java
+services:
+  db:
+    image: pgvector:latest
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: disney-th
+      POSTGRES_USER: disney-th
+      POSTGRES_DB: disney-th
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:
