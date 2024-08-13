@@ -5,6 +5,11 @@ This project ingests different web pages and stores them in a vector database (I
 All of the chat messages are ephemeral and not saved, so the only persistence done in this application is the embedding for search. 
 In an ideal world, we would save the chat sessions and message history in PostgreSQL as well as well as store user information to prevent having to ask everytime the page loads using an authentication scheme such as sessions or JWTs.  
 
+
+## Demo
+
+![demo gif](./assets/demo.gif)
+
 ## Getting started
 
 ### Running the database
