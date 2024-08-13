@@ -2,6 +2,9 @@
 
 This project ingests different web pages and stores them in a vector database (I chose to use the PgVector extension of PostgreSQL). The ingestion and RAG pipeline are executed using the langchain4j library. The backend leverages the Spring Boot framework and the frontend uses ReactJS. 
 
+All of the chat messages are ephemeral and not saved, so the only persistence done in this application is the embedding for search. 
+In an ideal world, we would save the chat sessions and message history in PostgreSQL as well as well as store user information to prevent having to ask everytime the page loads using an authentication scheme such as sessions or JWTs.  
+
 ## Getting started
 
 ### Running the database
@@ -48,11 +51,9 @@ bun run dev
 
 This will start up another webserver on port 3000. It has two pages `/app/chat` and `/app/ingest`. The chat page will ask for a user name and connect to the backend using websockets via the STOMP protocol. Messages will be sent to the backend and then the RAG pipeline on the backend will talk to OpenAI with the help of some context from our VectorDB to get an answer. When the answer is ready, its sent back to the client over websockets. 
 
-The ingestion page is a simple form that sends a request (explained below) to ingest a web page via a url. 
-
 ### Ingesting data sets (i.e. websites)
 
-On the `/app/ingest` page of the frontend, you can find a form that accepts a url to ingest a webpage. Its all done via a websocket connection to make the action (just like the chat interface) to make it async. 
+On the `/app/ingest` page of the frontend, you can find a form that accepts a url to ingest a webpage. Its all done via a websocket connection to make the action (just like the chat interface) async. 
 
 The backend has a handler that accepts a url which will ingest the content of the page by parsing the HTML, splitting the text, then creating embeddings via OpenAI, and storing them into PgVector. 
 
