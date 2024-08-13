@@ -4,6 +4,26 @@ This project ingests different web pages and stores them in a vector database (I
 
 ## Getting started
 
+### Running the database
+
+Since the core of this is a postgres database with an extention we'll need to spin one of those up really quick using docker. The [Dockerfile](./docker/db/Dockerfile) can be built locally to create an image that will contain the required extention. 
+
+```bash
+# From the root directory
+cd ./docker/db
+docker build . -t pgvector:latest
+```
+
+Once that image is built and accessible locally, you can start up the [docker compose file](./deployments/docker-compose.yaml). 
+
+```bash
+# From the root
+docker compose -f deployments/docker-compose.yaml up -d
+```
+
+This will start up a postgres container with port 5432 accessible. The default user/password/database are all called `disney-th`.  
+
+
 ### Running the Backend
 
 The main services lives in the [web](./java/web) module and can be ran using the spring-boot-maven-plugin. This will start up a webserver on port 8080.
@@ -32,15 +52,9 @@ The ingestion page is a simple form that sends a request (explained below) to in
 
 ### Ingesting data sets (i.e. websites)
 
-The backend has an endpoint that accepts a url which will ingest the content of the page by parsing the HTML, splitting the text, then creating embeddings via OpenAI, and storing them into PgVector. 
+On the `/app/ingest` page of the frontend, you can find a form that accepts a url to ingest a webpage. Its all done via a websocket connection to make the action (just like the chat interface) to make it async. 
 
-This request is synchronous at the moment so it will take a while, but in theory could be converted to an async model using websockets (or something similar). 
+The backend has a handler that accepts a url which will ingest the content of the page by parsing the HTML, splitting the text, then creating embeddings via OpenAI, and storing them into PgVector. 
 
-To ingest a website run the following curl command from the cli:
+Once the operation has completed, it responds with a message on the websocket indicating its completed so the frontend can display something to show the user. 
 
-```bash
-curl -X POST \
-    -H "Content-type: application/json" \
-    -d '{ "url": "..." }' \
-    http://localhost:8080/api/ingest
-```

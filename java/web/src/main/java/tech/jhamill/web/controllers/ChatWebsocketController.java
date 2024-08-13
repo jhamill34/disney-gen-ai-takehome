@@ -24,11 +24,6 @@ public class ChatWebsocketController {
     @MessageMapping("/post")
     @SendTo("/topic/responses")
     public ChatMessageResponse postMessage(ChatMessage chatMessage) {
-        // TODO: This allows for OpenAI to take its time and respond when
-        //   we're ready but if we have multiple clients, the initial message
-        //   won't get broadcast to all other clients (we would need to
-        //   handle deduplication for the initial client). For this we'll
-        //   need an external message broker like RabbitMQ or ActiveMQ
         Result<String> response = assistant.chat(chatMessage.getSenderId(), chatMessage.getMessage());
 
         List<SourceContent> sources = response.sources()
