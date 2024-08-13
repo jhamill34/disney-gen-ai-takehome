@@ -1,3 +1,4 @@
+import { Navigation } from '@/components/nav';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -85,6 +86,21 @@ const ChatMessageBubble: React.FC<ChatMessageProps> = ({
           </ul>
         </div>
       )}
+    </div>
+  );
+};
+
+const LoadingChatMessageBubble: React.FC = () => {
+  return (
+    <div
+      className={cn(
+        'flex flex-row max-w-20 gap-2 p-4 rounded-lg shadow-sm',
+        'bg-secondary text-secondary-foreground mr-16',
+      )}
+    >
+      <span className="w-2 h-2 rounded-full bg-muted-foreground animate-[bounce_800ms_infinite_0ms]" />
+      <span className="w-2 h-2 rounded-full bg-muted-foreground animate-[bounce_800ms_infinite_100ms]" />
+      <span className="w-2 h-2 rounded-full bg-muted-foreground animate-[bounce_800ms_infinite_200ms]" />
     </div>
   );
 };
@@ -191,10 +207,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
 const ChatPane: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [messages, setMessages] = useState<ChatMessageEntryWithLinks[]>([]);
   const sockClient = useStompClient();
 
   useSubscription('/topic/responses', (message) => {
+    setSubmitting(false);
     const response = JSON.parse(message.body) as ChatMessageResponse;
     const links = new Set<string>();
     for (const s of response.sources) {
@@ -218,23 +236,34 @@ const ChatPane: React.FC = () => {
           </span>
         )}
       </div>
-      {user !== null && (
-        <div className="flex flex-col gap-4 p-4">
+      {user !== null ? (
+        <div className="flex flex-col gap-4 p-4 min-h-64">
+          {messages.length === 0 && (
+            <div className="text-center p-4 font-bold text-muted-foreground min-h-64">
+              No Messages Yet
+            </div>
+          )}
           {messages.map((m, i) => (
             <ChatMessageBubble key={i} user={user} entry={m} />
           ))}
+          {submitting && <LoadingChatMessageBubble />}
+        </div>
+      ) : (
+        <div className="text-center p-4 font-bold text-muted-foreground min-h-64">
+          You need a username to continue
         </div>
       )}
       <div>
         <ChatInput
           user={user}
-          disabled={user === null}
+          disabled={user === null || submitting}
           onSend={(m) => {
             if (sockClient) {
               sockClient.publish({
                 destination: '/app/post',
                 body: JSON.stringify(m),
               });
+              setSubmitting(true);
               setMessages((all) => [...all, { ...m, links: [] }]);
             }
           }}
@@ -247,6 +276,7 @@ const ChatPane: React.FC = () => {
 export const ChatPage: React.FC = () => {
   return (
     <StompSessionProvider url="http://localhost:8080/ws">
+      <Navigation />
       <ChatPane />
     </StompSessionProvider>
   );

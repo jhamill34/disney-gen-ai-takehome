@@ -1,9 +1,9 @@
+import { Navigation } from '@/components/nav';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import { Label } from '@radix-ui/react-label';
+import { LoaderCircleIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
   StompSessionProvider,
@@ -51,7 +52,11 @@ const IngestionForm: React.FC = () => {
     <div className="max-w-5xl mx-auto">
       <Card className="m-8">
         <CardHeader>
-          <CardTitle>URL Ingestion</CardTitle>
+          <CardTitle>
+            <div className="flex gap-2 items-center">
+              <h1>URL Ingestion</h1>
+            </div>
+          </CardTitle>
           <CardDescription>
             Provide a valid url to a web page that contains HTML to add it to
             the knowledge base
@@ -81,7 +86,11 @@ const IngestionForm: React.FC = () => {
             />
             <div className="flex">
               <Button type="submit" disabled={submitting}>
-                Submit
+                {submitting ? (
+                  <LoaderCircleIcon className="w-5 h-5 animate-spin" />
+                ) : (
+                  'Submit'
+                )}
               </Button>
             </div>
           </form>
@@ -94,6 +103,7 @@ const IngestionForm: React.FC = () => {
 export const IngestionPage: React.FC = () => {
   return (
     <StompSessionProvider url="http://localhost:8080/ws">
+      <Navigation />
       <IngestionForm />
       <Toaster />
     </StompSessionProvider>
