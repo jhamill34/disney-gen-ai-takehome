@@ -1,0 +1,235 @@
+openapi: 3.0.0
+info:
+  title: "Disney GenAI Takehome"
+  version: "0.1.0"
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: chat
+  - name: source
+paths:
+  "/chat":
+    get:
+      operationId: listChatSessions
+      description: "Lists all chat sessions logged in user has access to"
+      security: []
+      tags: 
+        - chat
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatSession"
+
+    post:
+      operationId: createChatSession
+      description: "Creates a new chat session"
+      security: []
+      tags: 
+        - chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChatSessionInput"
+
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatSession"
+
+  "/chat/{id}":
+    parameters:
+      - name: id
+        description: "Chat Session ID"
+        in: path
+        required: true
+        schema:
+          type: string
+
+    get:
+      description: "Gets a single chat session with messages history"
+      operationId: getChatSession
+      security: []
+      tags: 
+        - chat
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatSession"
+
+    delete:
+      operationId: deletChatSession
+      description: "Deletes the chat session and message history"
+      security: []
+      tags: 
+        - chat
+      responses:
+        "204":
+          description: "No Content"
+
+  "/chat/{id}/message":
+    parameters:
+      - name: id
+        description: "Chat Session ID"
+        in: path
+        required: true
+        schema:
+          type: string
+
+    get:
+      operationId: listMessages
+      description: "Lists all messages for a chat session"
+      security: []
+      tags: 
+        - chat
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+
+    post:
+      operationId: postMessage
+      description: "Sends a chat message to the server"
+      security: []
+      tags: 
+        - chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostChatMessageInput"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessage"
+
+  "/source":
+    get:
+      operationId: listSources
+      description: "Lists all ingested sources"
+      security: []
+      tags: 
+        - chat
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Source"
+
+    post:
+      operationId: createSource
+      description: "Creates a new ingestion source"
+      security: []
+      tags: 
+        - chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSourceInput"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Source"
+
+  "/source/{id}":
+    parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: "Ingestion Source ID"
+        schema:
+          type: string
+
+    delete:
+      operationId: deleteSource
+      description: "Deletes a source"
+      security: []
+      tags: 
+        - chat
+      responses:
+        "204":
+          description: "No Content"
+
+components:
+  schemas:
+    ChatSession:
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id:
+          type: string
+    CreateChatSessionInput:
+      type: object
+      additionalProperties: false
+      required: []
+      properties: {}
+    ChatMessage:
+      type: object
+      additionalProperties: false
+      required: [id, message, sender_id]
+      properties:
+        id:
+          type: string
+        message:
+          type: string
+        sender_id:
+          type: string
+    PostChatMessageInput:
+      type: object
+      additionalProperties: false
+      required: [message]
+      properties:
+        message:
+          type: string
+    Source:
+      type: object
+      additionalProperties: false
+      required: [id, url, last_fetched]
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        last_fetched:
+          type: string
+    CreateSourceInput:
+      type: object
+      additionalProperties: false
+      required: [url]
+      properties:
+        url:
+          type: string
+
+  securitySchemes: {}
+

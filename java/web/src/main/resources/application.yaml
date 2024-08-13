@@ -1,7 +1,8 @@
 langchain4j:
   rag:
       retrieval:
-          max-results: 3
+          max-results: 5
+          min-score: 0.75
 
   open-ai:
       chat-model:

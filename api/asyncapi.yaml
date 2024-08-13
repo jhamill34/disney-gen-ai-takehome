@@ -1,0 +1,48 @@
+asyncapi: 3.0.0
+info:
+  title: "Disney GenAI Takehome"
+  version: "0.1.0"
+servers:
+  development:
+    host: localhost:8080/ws
+    protocol: ws
+channels:
+  chat:
+    description: "The chat session new messages get sent to"
+    address: "chat.{sessionId}"
+    messages:
+      chatMessage:
+        $ref: '#/components/messages/ChatMessage'
+    parameters:
+      sessionId:
+        description: "Session ID to use"
+operations:
+  publishMessage:
+    action: "send"
+    description: "Sends a new message to consumers"
+    channel:
+      $ref: '#/channels/chat'
+    messages:
+      - $ref: '#/components/message/ChatMessage'
+    security: []
+components:
+  messages:
+    ChatMessage:
+        name: "chatMessage"
+        description: ""
+        contentType: "application/json"
+        correlationId:
+          location: "message.payload#/id"
+        payload:
+          type: object
+          additionalProperties: false
+          required: [id, sender_id, message]
+          properties:
+            id:
+              type: string
+            sender_id:
+              type: string
+            message:
+              type: string
+
+  securitySchemes: {}

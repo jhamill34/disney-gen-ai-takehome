@@ -1,0 +1,16 @@
+# Ingest a single blog post
+POST http://localhost:8080/api/ingest
+Content-Type: application/json
+
+{
+    "url": "https://disneyparksblog.com/disney-experiences/d23-2024-news-announcements-roundup/"    
+}
+
+# Chat with the AI 
+POST http://localhost:8080/api/chat
+Content-Type: application/json
+
+{
+    "senderId": "josh",
+    "message": "I heard there's going to be a cars attraction, is that true?"
+}
